@@ -40,8 +40,8 @@ union Response {
 
 
 union multi_sensor_data multiSensorData;
-uint8_t check[10];
-uint8_t value[10];
+uint8_t check[sizeof("password22")];
+uint8_t value[sizeof("password22")];
 bool once = true;
 union Response response;
 
@@ -63,9 +63,8 @@ void setupSensor() {
   // }
 }
 
-
 bool setupBleMode() {
-  memmove(check, "password22", 10);
+  memmove(check, "password22", sizeof("password22"));
 
   if (!BLE.begin()) {
     return false;
@@ -141,21 +140,23 @@ void loop() {
     Serial.println(central.address());
 
     while (central.connected()) {
-      long interval = 1000;
+      long interval = 2000;
       unsigned long currentMillis = millis();
 
       if (currentMillis - previousMillis > interval) {
         if (passwordCharacteristic.written() == 1) {
           passwordCharacteristic.readValue(value, 10);
-          if (*value == *check) {
+          if (memcmp(check, value, sizeof(check)) == 0) {
             response.value = 1;
+            Serial.println("yo");
             passwordCharacteristic.writeValue(response.bytes, sizeof response.bytes);
-          }else{
+          } else {
             response.value = 0;
+            Serial.println("yoo");
             passwordCharacteristic.writeValue(response.bytes, sizeof response.bytes);
           }
         }
-        if (*value == *check) {
+        if (memcmp(check, value, sizeof(check)) == 0) {
           multiSensorData.values[0] = step;
           Serial.println("Sending");
           multiSensorDataCharacteristic.writeValue(multiSensorData.bytes, sizeof multiSensorData.bytes);
@@ -163,7 +164,6 @@ void loop() {
           response.value = 0;
           passwordCharacteristic.writeValue(response.bytes, sizeof response.bytes);
         }
-
         previousMillis = currentMillis;
       }
     }
