@@ -68,7 +68,9 @@ async def run():
 
                 if bytearray(b'\x01\x00') == aa:
                     valid = True
+                    print('welcome admin !!')
                 else:
+                    print('wrong password :/ !!')
                     valid = False
 
             elif valid == True:
