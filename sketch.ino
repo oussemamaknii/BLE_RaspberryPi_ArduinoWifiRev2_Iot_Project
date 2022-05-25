@@ -8,12 +8,6 @@
 
 #define NUMBER_OF_SENSORS 4
 
-LiquidCrystal lcd(12, 11, 5, 4, 9, 8);
-float latitude, longitude;
-SoftwareSerial gpSerial(2, 3);
-TinyGPS gps;
-uint32_t step = 0;
-
 union multi_sensor_data {
   struct __attribute__((packed)) {
     float values[NUMBER_OF_SENSORS];
@@ -27,13 +21,16 @@ union Response {
   signed char bytes[sizeof(int)];
 };
 
-
+LiquidCrystal lcd(12, 11, 5, 4, 9, 8);
+float latitude, longitude;
+SoftwareSerial gpSerial(2, 3);
+TinyGPS gps;
+uint32_t step = 0;
 union multi_sensor_data multiSensorData;
 uint8_t check[sizeof("password22")];
 uint8_t value[sizeof("password22")];
 union Response response;
 boolean fall = false;
-
 
 BLEService sensorDataService("8158b2fd-94e4-4ff5-a99d-9a7980e998d7");
 BLECharacteristic multiSensorDataCharacteristic("d508bc0a-ecdd-5ba5-9d33-13d5887a7718", BLERead | BLENotify, sizeof multiSensorData.bytes);
@@ -47,16 +44,13 @@ void setupSensor() {
 
   gpSerial.begin(9600);
 
-  if (IMU.begin()) {
-  }
+  IMU.begin();
 }
 
 bool setupBleMode() {
   memmove(check, "password22", sizeof("password22"));
 
-  if (!BLE.begin()) {
-    return false;
-  }
+  BLE.begin();
 
   BLE.setDeviceName("Station");
   BLE.setLocalName("Station");
@@ -66,7 +60,6 @@ bool setupBleMode() {
   sensorDataService.addCharacteristic(passwordCharacteristic);
   BLE.addService(sensorDataService);
   BLE.advertise();
-  return true;
 }
 
 void setup() {
@@ -88,8 +81,6 @@ void loop_sensors() {
 
   if (gps.encode(gpSerial.read())) {
     gps.f_get_position(&latitude, &longitude);
-    Serial.print(latitude);
-    Serial.println(longitude);
     if (longitude == 0 & latitude == 0) {
       multiSensorData.values[1] = 48.8246997;
       multiSensorData.values[2] = 2.2802696;
@@ -98,11 +89,6 @@ void loop_sensors() {
       multiSensorData.values[2] = latitude;
     }
   }
-  imu_loop();
-}
-
-void imu_loop() {
-  
 }
 
 void loop() {
