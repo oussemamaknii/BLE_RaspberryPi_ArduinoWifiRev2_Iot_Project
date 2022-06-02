@@ -15,11 +15,6 @@ BLE is a popular and one of the most appropriate solutions for IoT because of it
 So, for our use case, to achieve such solution we created as a GATT profile BLE service that contains two characteristics and that will specifies in which profile data is exchanged, so the first characteristic was for reading, writing and notifying the central if some values changed, writing new values or reading informations to execute some tasks as alerting the current user if his patient felt by a led blinking and displaying a message on the LCD. However, the other characteristic was made specifically for securing the communication between our central and 
 peripheral and that been implemented using uuid5 which will unlock encryption and authentication features.
 
-
-
-Then use a regular expression match for the ObjectId() and ISODate() characters and remove them, Then it becomes easier to parse it with Javascript and that’s how we managed to integrate our different platforms.
-
-
 Web Application
 The data visualization part is merged for both platforms using VueJs as Frontend and SpringBoot as backend. Basically we used axios library to access the data of mobile sensors which will give us the access to our flask https server and eliminate the CORE policy problems, and for the visualization part we  added two components at the right part of the webpage, which shows the latest steps count, whether the patient felt or not and at what time exactly and where by the gps coordinates and finally the number of calories burnt for his daily needs. 
 
